@@ -1,0 +1,22 @@
+{
+  "name": "pomodoro",
+  "short_name": "pomodoro",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#fff",
+  "description": "productivity: Pomodoro Technique timer, manage your work/break sessions",
+  "icons": [{
+    "src": "icon192x192.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  },
+{
+  "src": "icon512x512.png",
+  "type": "image/png",
+  "sizes": "512x512"
+  
+
+}],
+"theme_color": "#4A5BB9"
+ 
+}

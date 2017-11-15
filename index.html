@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <link rel="icon" type="image/png" href="icon.png" />
+        <link rel="manifest" href="manifest.json">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#317EFB"/>
+    <title>pomodoro</title>
+<style>
+
+body {
+    display:flex;
+    flex-direction:column;
+    justify-content: center;
+}
+#clock {
+    stroke-dasharray: 100;
+      stroke-dashoffset: 0;
+
+  
+}
+main {
+    margin:auto;
+    position: relative;
+    display:flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    height: 90vmin;
+    width:90vmin;
+    flex-direction:column;
+}
+div {
+    margin: auto;
+    z-index: 2;
+
+}
+#timer{
+    position: absolute;
+    top: 35%;
+    left: 10%;
+    width: 80%;
+    max-width: 80%;
+    text-align: center;
+    font-size: 10vmin;
+
+}
+#ui {
+    position: absolute;
+    bottom: 30%;
+    left: 10%;
+    width: 80%;
+    max-width: 80%;
+    display: flex;
+    justify-content: center;
+    
+   
+}
+main svg{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+#ui svg {
+    position: relative;
+    
+}
+#ui button {
+    text-align: center;
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    outline: none;
+    border: none;
+   
+   z-index: 1;
+   
+}
+#minus,#plus,#stop {
+    background: transparent;
+    
+}
+.finish #minus {
+    display: none;
+}
+
+nav {
+    display: flex;
+}
+.finish  #minus {
+    display: none;
+}
+@media screen and (orientation: portrait) {
+    nav {
+        flex-direction: column;
+    }
+    
+}
+
+nav img  {
+    margin: 5px 5px 0 0;
+}
+nav input {
+    margin-left: 5px;
+}
+
+nav div {
+    display: flex;
+    align-items: center;
+}
+#stop{
+display: none;
+z-index: 2;
+}
+
+@keyframes stopButton {
+  0%   { 
+      opacity: 0;
+      transform: translateY(0) }
+  100% { 
+      opacity: 1;
+      transform: translateY(100%); }
+}
+.paused #stop{
+    position: absolute;
+    display: inline-block;
+    animation: stopButton;
+    animation-duration: 0.5s;
+
+    transform: translateY(100%);
+}
+
+</style>
+</head>
+<body>
+<main>
+    <svg   viewbox="0 0 40 40">
+        <circle cx="20" cy="20" r="15.9" stroke="#263238" stroke-width="2" fill="none"></circle>
+        
+      </svg>
+    <svg  id="clock" viewbox="0 0 40 40">
+        <circle cx="20" cy="20" r="15.9" stroke="#4285f4" stroke-width="2" fill="none"></circle>
+        
+      </svg>
+    
+      <div id="timer"></div>
+      <div id="ui">
+        
+         <button title="5 minutes less" id="minus" onclick="updateDuration(pomodoro.duration-3E5)"><svg viewBox="0 0 512 512" ><rect height="64" width="384" x="64" y="224"/></svg></button>
+         <button title="start work" onclick="handle()" id="play" ><svg width="100%" height="100%" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            
+                <path  d="M11,10 L18,13.74 18,22.28 11,26 M18,13.74 L26,18 26,18 18,22.28">
+                   <animate class="animation" begin="indefinite" attributeType="XML" attributeName="d" fill="freeze" from="M11,10 L18,13.74 18,22.28 11,26 M18,13.74 L26,18 26,18 18,22.28" to="M11,10 L17,10 17,26 11,26 M20,10 L26,10 26,26 20,26" dur="0.1s" keySplines=".4 0 1 1"
+                   repeatCount="1"></animate>
+                </path>
+             
+            
+          </svg></button>
+         <button title="stop" onclick="stop()"id="stop"><svg  viewBox="0 0 512 512" ><path d="M437.4,64H74.6C68.7,64,64,68.7,64,74.6v362.8c0,5.9,4.7,10.6,10.6,10.6h362.8c5.8,0,10.6-4.7,10.6-10.6V74.6  C448,68.7,443.2,64,437.4,64z"/></svg></button>
+         <button title="5 more minutes" id="plus" onclick="updateDuration(pomodoro.duration+3E5)"><svg  viewBox="0 0 128 128" ><line style="fill:none;stroke:#2F3435;stroke-width:12;stroke-miterlimit:10;" x1="13.787" x2="114.213" y1="64.001" y2="64.001"/><line style="fill:none;stroke:#2F3435;stroke-width:12;stroke-miterlimit:10;" x1="64" x2="64" y1="13.787" y2="114.213"/></svg></button>
+      </div>
+
+
+</main>
+<nav>
+ <div>
+     <img src="work.png" alt="work icon" title="work" width="50px" height="50px"/>
+     <label for="workDuration"> work:  </label>
+     <input id="workDuration"  type="time" step=1 value="00:25:00"  onblur="updateDuration(HHMMSStoms(this.value),'work')"></input>
+</div>
+<div>   
+        <img width="50px" alt="break icon" title="break" height="50px" src="break.png"/>
+        <label for="breakDuration">  break:  </label>
+        <input id="breakDuration" type="time" step=1  value="00:05:00" onblur="updateDuration(HHMMSStoms(this.value),'break')"></input>
+</div> 
+</na>  
+
+</nav>      
+     
+<script>
+ "use strict"
+
+
+ const pomodoro = {
+     finish: -1,
+     duration: 10E6,
+     state: "work",//"work","break"
+     main: document.getElementsByTagName("main")[0],
+     progress: document.getElementById("clock"),
+     progressAnimation: undefined,
+     timer: document.getElementById("timer"),
+     timeout: undefined,
+     playButton: document.getElementById("play"),
+     durationsInput: { work: document.getElementById("workDuration"),break: document.getElementById("breakDuration")},
+     get remaining () { return this.finish - performance.now();},
+         
+    
+ }
+ const HHMMSStoms = time => 1*new Date('1970-01-01T' + time + 'Z').getTime();
+ const msToHHMMSS = time => new Date(time).toISOString().slice(11,-5);
+ let updateTimer = () =>{
+       
+       if(pomodoro.progressAnimation.playState !== "paused"  && pomodoro.progressAnimation.playState !== "finished" && pomodoro.remaining > 0){
+               pomodoro.timer.textContent = msToHHMMSS(pomodoro.remaining);
+               window.requestAnimationFrame(updateTimer);
+           
+
+       }
+ }
+ 
+let finish =()=>{
+  
+    pomodoro.main.className = "finish";
+    // clock sound http://www.orangefreesounds.com/grandfather-clock-chimes/
+    const audio = new Audio('clock.mp3');
+     audio.play();
+     if(pomodoro.state === "work"){
+        
+        var message = " Well done! take a break!";
+        pomodoro.state = "break";
+    const ico = {
+        work : `<svg  viewBox="0 0 20 21">><path d="M18,4 L14,4 L14,2 L12,0 L8,0 L6,2 L6,4 L2,4 C0.9,4 0,4.9 0,6 L0,17 C0,18.1 0.9,19 2,19 L18,19 C19.1,19 20,18.1 20,17 L20,6 C20,4.9 19.1,4 18,4 L18,4 Z M12,4 L8,4 L8,2 L12,2 L12,4 L12,4 Z" /></svg>`
+    }
+      
+    }else{
+        var message =" Let's go back to work!  "
+        pomodoro.state = "work";
+    }
+     
+      if(Notification.permission === "granted"){
+
+
+        navigator.serviceWorker.ready.then(function(registration) {
+           
+        registration.showNotification(message, {
+          
+          icon: `${window.location.href}${pomodoro.state}.png`,
+          actions: [  
+             {action: 'start', title: `start ${pomodoro.state}`, icon: `play.png`},  
+             {action: 'later', title: '5 more minutes', icon: `add.png`}]  
+            ,
+        
+        });
+       
+        navigator.serviceWorker.onmessage = function(e){
+            let r = JSON.parse(e.data);
+            
+            if(r.hasOwnProperty("notificationAction")){
+                switch(r.notificationAction){
+                   case "start": start(); break;
+                   case "later": updateDuration(pomodoro.duration + 3E5); break;
+                }
+            }
+        }
+       
+        
+      });
+      }   
+     pomodoro.playButton.title = `start ${pomodoro.state}`;
+     AnimatePlayButton(1);  
+     pomodoro.timer.innerHTML = `<span style="font-size:5.5vmin">${message}</span>`
+    
+       
+}
+let animate = (start,duration)=>{
+    pomodoro.progressAnimation= pomodoro.progress.animate( [
+     { strokeDashoffset: start },
+     { strokeDashoffset: '0' }   
+   ], {
+     duration:  duration,
+     direction: pomodoro.state === "work"?"normal":"reverse"
+   })
+
+}
+ let stop = () => {
+    pomodoro.progressAnimation.cancel();
+    window.clearTimeout(pomodoro.timeout);
+    pomodoro.main.className = "";
+     pomodoro.timer.textContent = msToHHMMSS(pomodoro.duration);
+ }
+let updateDuration = (newDuration,target=pomodoro.state) =>{
+    
+    if(newDuration < 0)newDuration = 0;
+    
+    
+    if(pomodoro.state === target){
+        pomodoro.timer.textContent = msToHHMMSS(newDuration);
+        let delta = newDuration - pomodoro.duration;
+        pomodoro.duration = newDuration;
+        if(pomodoro.progressAnimation){
+            if(delta > 0 || pomodoro.main.className!=="finish"){
+               
+            if(pomodoro.finish < performance.now()){
+                        pomodoro.finish = performance.now() + delta;
+                        pomodoro.main.className = "playing";
+                        pomodoro.state =pomodoro.state === "work"?"break":"work";
+                        target = pomodoro.state;
+                       
+            }else{
+                        pomodoro.finish += delta;
+            }
+          
+            
+            window.clearTimeout(pomodoro.timeout);
+            window.setTimeout(finish,pomodoro.remaining);
+
+            pomodoro.progressAnimation.cancel();
+            animate( (pomodoro.remaining/pomodoro.duration)*100, pomodoro.remaining);
+             
+            window.requestAnimationFrame(updateTimer);
+            }
+          
+       
+         }
+    }
+    pomodoro.durationsInput[target].value = msToHHMMSS(newDuration); 
+}
+
+
+ let start = () => {
+    if(Notification.permission !== 'denied' && Notification.permission !== 'granted'){
+
+        Notification.requestPermission();
+        
+
+
+    }
+    pomodoro.playButton.title="pause";
+    pomodoro.main.className= "playing";
+   
+    pomodoro.duration = HHMMSStoms(pomodoro.durationsInput[pomodoro.state].value);
+  
+    pomodoro.finish = pomodoro.duration + performance.now();
+   
+    pomodoro.timeout=window.setTimeout(finish,pomodoro.duration);
+ 
+     
+     animate("100",pomodoro.duration);
+     window.requestAnimationFrame(updateTimer);
+
+ }
+let pause = ()=>{
+    
+    if(pomodoro.progressAnimation.playState === "running"){
+        pomodoro.main.className= "paused";
+        pomodoro.playButton.title="resume";
+        pomodoro.progressAnimation.pause();
+        clearTimeout(pomodoro.timeout);
+    }
+}
+let resume = ()=>{
+    if(pomodoro.progressAnimation.playState === "paused"){
+        pomodoro.main.className = "playing";
+        pomodoro.playButton.title="pause";
+      pomodoro.finish = performance.now() + pomodoro.duration - pomodoro.progressAnimation.currentTime;
+      pomodoro.progressAnimation.play();
+      pomodoro.timeout = window.setTimeout(finish, pomodoro.remaining);
+      window.requestAnimationFrame(updateTimer);
+    }
+}
+let AnimatePlayButton = (flip=0)=>{
+   
+    const data= ["M11,10 L18,13.74 18,22.28 11,26 M18,13.74 L26,18 26,18 18,22.28","M11,10 L17,10 17,26 11,26 M20,10 L26,10 26,26 20,26"];
+    let a = pomodoro.playButton.getElementsByClassName("animation")[0];
+          a.setAttribute("from",data[0^flip] );
+          a.setAttribute("to",data[1^flip] );
+     a.beginElement();
+}
+let handle = () =>{     
+    
+    
+    switch(pomodoro.main.className){
+        case "playing": pause();  break;
+        case "paused": resume(); ; break;
+        default: start();   break;
+
+    }
+    AnimatePlayButton(pomodoro.main.className === "paused");  
+}
+
+//init 
+pomodoro.duration= HHMMSStoms(pomodoro.durationsInput[pomodoro.state].value);
+pomodoro.timer.textContent= msToHHMMSS(pomodoro.duration);
+</script>
+   <script>
+        "use strict"
+    if ('serviceWorker' in navigator) {
+ 
+        navigator.serviceWorker.register('service-worker.js')
+          .then(function(reg){
+            console.log("Yes, it did.");
+          }).catch(function(err) {
+            console.log("No it didn't. This happened: ", err)
+          });
+      }
+    </script>
+</body>
+</html>
